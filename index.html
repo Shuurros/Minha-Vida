@@ -417,7 +417,6 @@ function abrirCarta(){
   _cartaAberta = true;
   var sc = document.getElementById('env-screen');
   if(!sc) return;
-  // Força todo conteúdo a aparecer antes de esconder o envelope
   document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('vis'); });
   sc.style.transition = 'opacity 0.9s ease';
   sc.style.opacity = '0';
@@ -431,6 +430,9 @@ function abrirCarta(){
     }catch(e){}
   }, 900);
 }
+function toggleLetter(el){ if(el) el.classList.toggle('open'); }
+function abrirSeg(){ var o=document.getElementById('sec-ov'); if(o) o.classList.add('vis'); }
+function fecharSeg(){ var o=document.getElementById('sec-ov'); if(o) o.classList.remove('vis'); }
 </script>
 </head>
 <body>
@@ -716,80 +718,82 @@ function abrirCarta(){
 </div>
 
 <script>
-
 document.addEventListener('DOMContentLoaded', function(){
 
-  // ── Pétalas ──
-  const petalContainer = document.getElementById('petals');
-  const ps = ['🌸','🌹','🌺','✿','❀','🌷'];
-  for(let i=0;i<30;i++){
-    const p = document.createElement('div');
-    p.className='petal';
-    p.textContent = ps[i%ps.length];
-    p.style.left = Math.random()*100+'%';
-    p.style.fontSize = (.65+Math.random()*1.1)+'rem';
-    p.style.animationDuration = (13+Math.random()*18)+'s';
-    p.style.animationDelay = (Math.random()*20)+'s';
-    petalContainer.appendChild(p);
+  // ── Pétalas de fundo ──
+  var petalContainer = document.getElementById('petals');
+  if(petalContainer){
+    var ps = ['🌸','🌹','🌺','✿','❀','🌷'];
+    for(var i=0;i<30;i++){
+      var p = document.createElement('div');
+      p.className='petal';
+      p.textContent = ps[i%ps.length];
+      p.style.left = Math.random()*100+'%';
+      p.style.fontSize = (.65+Math.random()*1.1)+'rem';
+      p.style.animationDuration = (13+Math.random()*18)+'s';
+      p.style.animationDelay = (Math.random()*20)+'s';
+      petalContainer.appendChild(p);
+    }
   }
 
-  // ── Cursor ──
+  // ── Cursor (só desktop) ──
   if(window.matchMedia('(hover:hover) and (pointer:fine)').matches){
     document.body.classList.add('hascursor');
-    const cur = document.getElementById('cursor');
-    const sps = ['✨','💫','🌸','💗','⭐'];
-    let lt = 0;
+    var cur = document.getElementById('cursor');
+    var sps = ['✨','💫','🌸','💗','⭐'];
+    var lt = 0;
     document.addEventListener('mousemove',function(e){
       if(cur){cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';}
-      const now = Date.now();
+      var now = Date.now();
       if(now-lt>85){
         lt=now;
-        const s=document.createElement('span');
+        var s=document.createElement('span');
         s.className='spark';
         s.textContent=sps[Math.floor(Math.random()*sps.length)];
         s.style.left=(e.clientX-6)+'px';s.style.top=(e.clientY-6)+'px';
         document.body.appendChild(s);
-        setTimeout(()=>s.remove(),650);
+        setTimeout(function(){s.remove();},650);
       }
     });
   }
 
-  // ── Envelope screen petals ──
-  const es = document.getElementById('env-screen');
+  // ── Pétalas dentro do envelope ──
+  var es = document.getElementById('env-screen');
   if(es){
-    const ep=['🌹','🌸','✨','💕','🌷','💖'];
-    for(let i=0;i<16;i++){
-      const h=document.createElement('span');
+    var ep=['🌹','🌸','✨','💕','🌷','💖'];
+    for(var j=0;j<16;j++){
+      var h=document.createElement('span');
       h.className='env-fp';
-      h.textContent=ep[i%ep.length];
+      h.textContent=ep[j%ep.length];
       h.style.left=(Math.random()*100)+'vw';
       h.style.animationDuration=(7+Math.random()*9)+'s';
       h.style.animationDelay=(Math.random()*9)+'s';
       h.style.fontSize=(.75+Math.random()*.9)+'rem';
+      h.style.pointerEvents='none';
       es.appendChild(h);
     }
   }
 
   // ── Contador ──
   try{
-    const start = new Date(2024,3,27,0,0,0);
+    var start = new Date(2024,3,27,0,0,0);
     function updateCounter(){
-      const now = new Date();
-      let diff = now - start;
-      const seg = Math.floor(diff/1000)%60;
-      const min = Math.floor(diff/60000)%60;
-      const hrs = Math.floor(diff/3600000)%24;
-      let anos=now.getFullYear()-start.getFullYear();
-      let meses=now.getMonth()-start.getMonth();
-      let dias=now.getDate()-start.getDate();
+      var now = new Date();
+      var diff = now - start;
+      var seg = Math.floor(diff/1000)%60;
+      var min = Math.floor(diff/60000)%60;
+      var hrs = Math.floor(diff/3600000)%24;
+      var anos=now.getFullYear()-start.getFullYear();
+      var meses=now.getMonth()-start.getMonth();
+      var dias=now.getDate()-start.getDate();
       if(dias<0){meses--;dias+=new Date(now.getFullYear(),now.getMonth(),0).getDate();}
       if(meses<0){anos--;meses+=12;}
-      const sa=document.getElementById('c-anos');
-      const sm=document.getElementById('c-meses');
-      const sd=document.getElementById('c-dias');
-      const sh=document.getElementById('c-horas');
-      const smi=document.getElementById('c-min');
-      const ss=document.getElementById('c-seg');
+      var sa=document.getElementById('c-anos');
+      var sm=document.getElementById('c-meses');
+      var sd=document.getElementById('c-dias');
+      var sh=document.getElementById('c-horas');
+      var smi=document.getElementById('c-min');
+      var ss=document.getElementById('c-seg');
       if(sa)sa.textContent=anos;
       if(sm)sm.textContent=meses;
       if(sd)sd.textContent=dias;
@@ -802,29 +806,23 @@ document.addEventListener('DOMContentLoaded', function(){
   }catch(e){}
 
   // ── Reveal on scroll ──
-  const revEls = document.querySelectorAll('.reveal');
+  var revEls = document.querySelectorAll('.reveal');
   if('IntersectionObserver' in window){
-    const obs = new IntersectionObserver(entries=>{
-      entries.forEach(en=>{
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
         if(en.isIntersecting){en.target.classList.add('vis');obs.unobserve(en.target);}
       });
-    },{threshold:0.12});
-    revEls.forEach(el=>obs.observe(el));
-    setTimeout(()=>revEls.forEach(el=>el.classList.add('vis')),4500);
+    },{threshold:0.08});
+    revEls.forEach(function(el){obs.observe(el);});
   } else {
-    revEls.forEach(el=>el.classList.add('vis'));
+    revEls.forEach(function(el){el.classList.add('vis');});
   }
 
   // ── Nav dots ──
-  const sections=['capa','historia','cartas','poema','promessas','fotos'];
-  const dots=document.querySelectorAll('.nd');
-  const secObs=new IntersectionObserver(entries=>{
-    entries.forEach(en=>{
-      if(en.isIntersecting){
-        const id=en.target.id;
-        dots.forEach(d=>{d.classList.remove('on');if(d.dataset.target===id)d.classList.add('on');});
-      }
-    });
-  },{threshold:0.4});
-  sections.forEach(id=>{const el=document.getElementById(id);if(el)secObs.observe(el);});
-  dots.forEach(d=>d.addEventListener('click',
+  var sections=['capa','historia','cartas','poema','promessas','fotos'];
+  var dots=document.querySelectorAll('.nd');
+  if('IntersectionObserver' in window){
+    var secObs=new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){
+          var id=
