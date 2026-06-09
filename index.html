@@ -420,18 +420,23 @@ function abrirCarta(){
   var sc = document.getElementById('env-screen');
   if(!sc) return;
   document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('vis'); });
+  // Inicia música AGORA — dentro do gesto do usuário (exigido pelo iOS Safari)
+  try{
+    var bgm = document.getElementById('bgm');
+    var mtog = document.getElementById('mtog');
+    if(bgm && bgm.src){
+      bgm.play().then(function(){if(mtog)mtog.textContent='⏸';}).catch(function(){});
+    }
+  }catch(e){}
+  // Anima e esconde o envelope
   sc.style.transition = 'opacity 0.9s ease';
   sc.style.opacity = '0';
   sc.style.pointerEvents = 'none';
-  setTimeout(function(){
-    sc.style.display = 'none';
-    try{
-      var bgm = document.getElementById('bgm');
-      var mtog = document.getElementById('mtog');
-      if(bgm){ bgm.play().then(function(){if(mtog)mtog.textContent='⏸';}).catch(function(){}); }
-    }catch(e){}
-  }, 900);
+  setTimeout(function(){ sc.style.display = 'none'; }, 900);
 }
+function toggleLetter(el){ if(el) el.classList.toggle('open'); }
+function abrirSeg(){ var o=document.getElementById('sec-ov'); if(o) o.classList.add('vis'); }
+function fecharSeg(){ var o=document.getElementById('sec-ov'); if(o) o.classList.remove('vis'); }
 function toggleLetter(el){ if(el) el.classList.toggle('open'); }
 function abrirSeg(){ var o=document.getElementById('sec-ov'); if(o) o.classList.add('vis'); }
 function fecharSeg(){ var o=document.getElementById('sec-ov'); if(o) o.classList.remove('vis'); }
@@ -807,15 +812,4 @@ function fecharSeg(){ var o=document.getElementById('sec-ov'); if(o) o.classList
         if(en.isIntersecting){en.target.classList.add('vis');obs.unobserve(en.target);}
       });
     },{threshold:0.08});
-    revEls.forEach(function(el){obs.observe(el);});
-  } else {
-    revEls.forEach(function(el){el.classList.add('vis');});
-  }
-
-  // ── Nav dots ──
-  var navSections=['capa','historia','cartas','poema','promessas','fotos'];
-  var dots=document.querySelectorAll('.nd');
-  if('IntersectionObserver' in window){
-    var secObs=new IntersectionObserver(function(entries){
-      entries.forEach(function(en){
-  
+    revEls.forEach(function(el){obs.
