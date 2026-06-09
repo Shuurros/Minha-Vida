@@ -244,6 +244,8 @@ body.hascursor{cursor:none;}
   border:1px solid rgba(200,116,142,.14);
   position:relative;cursor:pointer;
   transition:transform .2s ease,box-shadow .25s ease;
+  text-align:left;width:100%;font-family:inherit;font-size:inherit;color:inherit;
+  display:block;
 }
 .letter:hover{transform:translateY(-3px);box-shadow:0 20px 54px var(--shadow);}
 .letter::before{content:'💌';position:absolute;top:-18px;left:26px;font-size:1.6rem;}
@@ -540,7 +542,6 @@ function fecharSeg(){ var o=document.getElementById('sec-ov'); if(o) o.classList
       <h3 class="tl-title">A primeira música que fiz para você</h3>
       <p class="tl-text">Teve um dia que as palavras não eram suficientes — então viraram música. Fiz essa aqui pensando em você, do começo ao fim.</p>
       <div class="tl-video reveal">
-        <video controls preload="none" src="video/musica_para_vida.mp4"></video>
         <p class="tl-video-cap">🎵 essa música nasceu de você, Vida — espero que faça você sorrir toda vez que ouvir.</p>
       </div>
     </div>
@@ -572,7 +573,7 @@ function fecharSeg(){ var o=document.getElementById('sec-ov'); if(o) o.classList
   <div class="orn reveal"><div class="orn-l"></div><span class="orn-i">💌</span><div class="orn-r"></div></div>
   <div class="letters">
 
-    <div class="letter reveal" onclick="toggleLetter(this)">
+    <button class="letter reveal" onclick="toggleLetter(this)" type="button">
       <div class="lhdr">
         <span class="ltitle">Um mês de nós</span>
         <span class="lhint">toque para ler ✨</span>
@@ -581,9 +582,9 @@ function fecharSeg(){ var o=document.getElementById('sec-ov'); if(o) o.classList
         <p>"Hoje faz um mês que estou te amando. Sou completamente apaixonado por você, por esta pessoa que você é... ao seu jeito, sua forma de cuidar... seus irresistíveis olhos, sua tentadora boca. Posso ficar o dia inteiro pensando o quanto lhe amo. Vida, a cada dia que passa, sou um homem mais apaixonado e vou fazê-la a mulher mais feliz desse mundo."</p>
         <p class="lsig">— de uma das primeiras cartas que te escrevi</p>
       </div>
-    </div>
+    </button>
 
-    <div class="letter reveal" onclick="toggleLetter(this)">
+    <button class="letter reveal" onclick="toggleLetter(this)" type="button">
       <div class="lhdr">
         <span class="ltitle">É você quem eu quero</span>
         <span class="lhint">toque para ler ✨</span>
@@ -592,7 +593,7 @@ function fecharSeg(){ var o=document.getElementById('sec-ov'); if(o) o.classList
         <p>"É você quem eu quero, compartilhar minha vida, os meus sonhos e as minhas alegrias. Vida, o seu ser me contagia com um amor, um sentimento inexplicável... Quando estamos juntos, fico em uma euforia, sem explicação. Sua voz me acalma, seu olhar me fascina."</p>
         <p class="lsig">— de outra carta, guardada com carinho</p>
       </div>
-    </div>
+    </button>
 
   </div>
 </section>
@@ -718,7 +719,8 @@ function fecharSeg(){ var o=document.getElementById('sec-ov'); if(o) o.classList
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function(){
+// Roda direto — sem DOMContentLoaded, o script está no final do body
+(function(){
 
   // ── Pétalas de fundo ──
   var petalContainer = document.getElementById('petals');
@@ -744,15 +746,15 @@ document.addEventListener('DOMContentLoaded', function(){
     var lt = 0;
     document.addEventListener('mousemove',function(e){
       if(cur){cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';}
-      var now = Date.now();
-      if(now-lt>85){
-        lt=now;
+      var now2 = Date.now();
+      if(now2-lt>85){
+        lt=now2;
         var s=document.createElement('span');
         s.className='spark';
         s.textContent=sps[Math.floor(Math.random()*sps.length)];
         s.style.left=(e.clientX-6)+'px';s.style.top=(e.clientY-6)+'px';
         document.body.appendChild(s);
-        setTimeout(function(){s.remove();},650);
+        setTimeout(function(){if(s.parentNode)s.parentNode.removeChild(s);},650);
       }
     });
   }
@@ -775,35 +777,27 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   // ── Contador ──
-  try{
-    var start = new Date(2024,3,27,0,0,0);
-    function updateCounter(){
-      var now = new Date();
-      var diff = now - start;
-      var seg = Math.floor(diff/1000)%60;
-      var min = Math.floor(diff/60000)%60;
-      var hrs = Math.floor(diff/3600000)%24;
-      var anos=now.getFullYear()-start.getFullYear();
-      var meses=now.getMonth()-start.getMonth();
-      var dias=now.getDate()-start.getDate();
-      if(dias<0){meses--;dias+=new Date(now.getFullYear(),now.getMonth(),0).getDate();}
-      if(meses<0){anos--;meses+=12;}
-      var sa=document.getElementById('c-anos');
-      var sm=document.getElementById('c-meses');
-      var sd=document.getElementById('c-dias');
-      var sh=document.getElementById('c-horas');
-      var smi=document.getElementById('c-min');
-      var ss=document.getElementById('c-seg');
-      if(sa)sa.textContent=anos;
-      if(sm)sm.textContent=meses;
-      if(sd)sd.textContent=dias;
-      if(sh)sh.textContent=hrs;
-      if(smi)smi.textContent=String(min).padStart(2,'0');
-      if(ss)ss.textContent=String(seg).padStart(2,'0');
-    }
-    updateCounter();
-    setInterval(updateCounter,1000);
-  }catch(e){}
+  var startDate = new Date(2024,3,27,0,0,0);
+  function updateCounter(){
+    var now = new Date();
+    var diff = now - startDate;
+    var seg = Math.floor(diff/1000)%60;
+    var min = Math.floor(diff/60000)%60;
+    var hrs = Math.floor(diff/3600000)%24;
+    var anos=now.getFullYear()-startDate.getFullYear();
+    var meses=now.getMonth()-startDate.getMonth();
+    var dias=now.getDate()-startDate.getDate();
+    if(dias<0){meses--;dias+=new Date(now.getFullYear(),now.getMonth(),0).getDate();}
+    if(meses<0){anos--;meses+=12;}
+    var sa=document.getElementById('c-anos'); if(sa)sa.textContent=anos;
+    var sm=document.getElementById('c-meses'); if(sm)sm.textContent=meses;
+    var sd=document.getElementById('c-dias'); if(sd)sd.textContent=dias;
+    var sh=document.getElementById('c-horas'); if(sh)sh.textContent=hrs;
+    var smi=document.getElementById('c-min'); if(smi)smi.textContent=String(min).padStart(2,'0');
+    var ss=document.getElementById('c-seg'); if(ss)ss.textContent=String(seg).padStart(2,'0');
+  }
+  updateCounter();
+  setInterval(updateCounter,1000);
 
   // ── Reveal on scroll ──
   var revEls = document.querySelectorAll('.reveal');
@@ -819,10 +813,9 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   // ── Nav dots ──
-  var sections=['capa','historia','cartas','poema','promessas','fotos'];
+  var navSections=['capa','historia','cartas','poema','promessas','fotos'];
   var dots=document.querySelectorAll('.nd');
   if('IntersectionObserver' in window){
     var secObs=new IntersectionObserver(function(entries){
       entries.forEach(function(en){
-        if(en.isIntersecting){
-          var id=
+  
